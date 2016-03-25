@@ -57,6 +57,8 @@ version = 0.1
 task clientJar(type: Jar){
 	from(sourceSets.main.output){
 	include "client/**"
+	include "utils/**"
+
 	}
 	
 	manifest {
@@ -88,6 +90,7 @@ task clientJar(type: Jar){
 task serverJar(type: Jar){
 	from(sourceSets.main.output){
 	include "server/**"
+	include "utils/**"
 	}
 
 	 manifest {
