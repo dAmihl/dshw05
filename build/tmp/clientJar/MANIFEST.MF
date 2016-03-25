@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: Client Jar
+Implementation-Version: 0.1
+Main-Class: client.ClientApplication
+
