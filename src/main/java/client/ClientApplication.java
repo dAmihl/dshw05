@@ -1,20 +1,17 @@
 package client;
 
-import org.json.simple.JSONObject;
+
+import utils.Protocol;
 
 public class ClientApplication {
 
 	public static void main(String[] args) {
-System.out.println("I am the client!");
+		System.out.println("Client started..");
+		System.out.println("Trying to connect to: "+Protocol.URL+":"+Protocol.PORT);
 
-JSONObject obj = new JSONObject();
-
-obj.put("name", "foo");
-obj.put("num", new Integer(100));
-obj.put("balance", new Double(1000.21));
-obj.put("is_vip", new Boolean(true));
-
-System.out.print(obj);
+		OperationClient client = new OperationClient();
+		client.connect();
+		
 	}
 
 }
