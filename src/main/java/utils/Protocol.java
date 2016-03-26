@@ -11,7 +11,12 @@ import org.json.simple.parser.ParseException;
 
 public class Protocol {
 	
-	
+	/**
+	 * Enum for the client to send requests of operations
+	 * The server interpretes the messages using these enums.
+	 * @author dAmihl
+	 *
+	 */
 	public static enum Operation{
 		AUTHENTICATE,
 		ADDITION,
@@ -20,11 +25,20 @@ public class Protocol {
 		LUCAS	
 	}
 	
+	/**
+	 * Enum for the server to send replys to clients.
+	 * The client uses this for error handling.
+	 * @author dAmihl
+	 *
+	 */
 	public static enum REPLY_TYPE{
 		OK,
 		ERROR
 	}
 
+	/**
+	 * PORT and URL of the server
+	 */
 	public static final int PORT = 1337;
 	public static final String URL = "localhost";
 	
@@ -49,6 +63,11 @@ public class Protocol {
 	}
 	
 	
+	/**
+	 * Writes a message to the output stream of the given socket.
+	 * @param socket The given socket to write to.
+	 * @param message The message to write.
+	 */
 	private static void sendMessage(Socket socket, String message){
 		OutputStream out = null;
 		try {
@@ -61,6 +80,13 @@ public class Protocol {
 		}
 	}
 	
+	
+	/**
+	 * Constructs a JSON message the server can send to clients.
+	 * @param type The reply type: OK or ERROR
+	 * @param message The message (or computation result if OK)
+	 * @return the JSON message
+	 */
 	public static String makeServerJSONMessage(REPLY_TYPE type, String message){
 		JSONObject json = new JSONObject();
 		json.put("type", type.toString());
@@ -68,6 +94,13 @@ public class Protocol {
 		return json.toJSONString();
 	}
 	
+	/**
+	 * Constructs a JSON message the client can send to a server
+	 * @param clientName the clients name
+	 * @param op The requested operation
+	 * @param args The arguments
+	 * @return The json message
+	 */
 	public static String makeClientJSONMessage(String clientName, Operation op, Integer... args){
 		JSONObject json = new JSONObject();
 		json.put("name", clientName);
@@ -80,6 +113,13 @@ public class Protocol {
 		return json.toJSONString();
 	}
 	
+	
+	/**
+	 * Parses a JSON object from a given string. Used by receiving message
+	 * from server or client
+	 * @param jsonString the received json string.
+	 * @return the parsed json object.
+	 */
 	public static JSONObject makeJsonObjectByString(String jsonString){
 		JSONParser parser = new JSONParser();
 		JSONObject obj = null;

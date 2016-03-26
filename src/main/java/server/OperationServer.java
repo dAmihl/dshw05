@@ -26,6 +26,10 @@ public class OperationServer {
 		
 	}
 	
+	/**
+	 * Starts the server and listening.
+	 * Runs as long as isRunning is true.
+	 */
 	public void start(){
 		while (isRunning){
 			Socket client = null;
@@ -48,12 +52,23 @@ public class OperationServer {
 		}
 	}
 	
+	
+	/**
+	 * Called when a client successfully connected to the server.
+	 * @param clientSocket The connected socket to client.
+	 */
 	private void clientConnected(Socket clientSocket){
 		System.out.println("Client successfully connected!");
 		System.out.println("Server now listening to client..");
+		// Waits for the client to send a message..
 		while(readClientMessage(clientSocket));
 	}
 	
+	/**
+	 * Reads a message by the client and interprets it.
+	 * @param clientSocket The socket to wait for a message
+	 * @return Whether a message was read yet or not.
+	 */
 	private boolean readClientMessage(Socket clientSocket){
 		try {
 			InputStream in = clientSocket.getInputStream();
@@ -77,9 +92,17 @@ public class OperationServer {
 		return true;
 	}
 	
+	
+	/**
+	 * Interpretes a sent message by the client.
+	 * @param socket The connected socket of the client.
+	 * @param message The received message. Has to be in JSON format.
+	 */
 	private void interpretMessageByClient(Socket socket,String message){
 		
 		JSONObject jsonObj = Protocol.makeJsonObjectByString(message);
+		
+		// Decide what operation should be done for the client.
 		if (jsonObj != null){
 			String requestedOperation = (String) jsonObj.get("operation");
 			switch (requestedOperation){
@@ -95,6 +118,11 @@ public class OperationServer {
 		
 	}
 	
+	/**
+	 * Trys to authenticate the user by the clients name.
+	 * @param socket The connected socket to the client.
+	 * @param clientMessage The JSONobject the client sent. This contains the clients name.
+	 */
 	private void doAuthenticate(Socket socket, JSONObject clientMessage){
 		String clientName = (String) clientMessage.get("name");
 		if (knownClientNames.contains(clientName)){
@@ -105,6 +133,11 @@ public class OperationServer {
 		
 	}
 	
+	/**
+	 * Performs the addition operation. Reads 2 arguments of the message.
+	 * @param socket The connected socket of client.
+	 * @param clientMessage The JSONObject the client sent.
+	 */
 	private void doAddition(Socket socket, JSONObject clientMessage){
 		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
 		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
@@ -116,6 +149,11 @@ public class OperationServer {
 		}
 	}
 	
+	/**
+	 * Performs the subtraction operation. Reads 2 arguments of the message.
+	 * @param socket The connected socket of client.
+	 * @param clientMessage The JSONObject the client sent.
+	 */
 	private void doSubtraction(Socket socket, JSONObject clientMessage){
 		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
 		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
@@ -127,6 +165,11 @@ public class OperationServer {
 		}
 	}
 	
+	/**
+	 * Performs the multiplication operation. Reads 2 arguments of the message.
+	 * @param socket The connected socket of client.
+	 * @param clientMessage The JSONObject the client sent.
+	 */
 	private void doMultiplication(Socket socket, JSONObject clientMessage){
 		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
 		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
@@ -138,6 +181,13 @@ public class OperationServer {
 		}
 	}
 	
+	/**
+	 * Performs the lucas numbers operation. Reads 1 argument 
+	 * (the number of lucas numbers to compute)
+	 *  of the message.
+	 * @param socket The connected socket of client.
+	 * @param clientMessage The JSONObject the client sent.
+	 */
 	private void doLucasNumbers(Socket socket, JSONObject clientMessage){
 		
 	}

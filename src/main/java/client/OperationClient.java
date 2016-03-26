@@ -20,6 +20,10 @@ public class OperationClient {
 	public OperationClient(){
 	}
 	
+	
+	/**
+	 * Called to connect to the server. PORT and URL are specified in Protocol class.
+	 */
 	public void connect(){
 		try {
 			clientSocket = new Socket(Protocol.URL, Protocol.PORT);
@@ -37,6 +41,9 @@ public class OperationClient {
 		}
 	}
 	
+	/**
+	 * Called to disconnect from the server. Closes the socket.
+	 */
 	public void disconnect(){
 		if (clientSocket != null){
 			try {
@@ -51,6 +58,11 @@ public class OperationClient {
 		}
 	}
 	
+	
+	/**
+	 * Called when successfully connected to a server.
+	 * @param socket The connected socket reference
+	 */
 	private void connectedToServer(Socket socket){
 		System.out.println("Client successfully connected to server!");
 		if (clientAuthenticate(socket)){
@@ -65,6 +77,11 @@ public class OperationClient {
 
 	}
 	
+	/**
+	 * Requests the authentication operation from server
+	 * @param socket The connected socket reference
+	 * @return Whether the authentication was successful.
+	 */
 	private boolean clientAuthenticate(Socket socket){
 		Protocol.request(socket, Protocol.Operation.AUTHENTICATE, clientName, new Integer[]{});
 		String replyMessage;
@@ -74,6 +91,13 @@ public class OperationClient {
 		return resultType.equals("OK");
 	}
 	
+	/**
+	 * Requests the Addition operation to the server
+	 * @param socket The connected socket reference
+	 * @param arg0 The first Argument of addition
+	 * @param arg1 The second Argument of addition
+	 * @return Whether the request and computation was successful.
+	 */
 	private boolean clientRequestAddition(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.ADDITION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
@@ -89,6 +113,13 @@ public class OperationClient {
 		}
 	}
 	
+	/**
+	 * Requests the Subtraction operation to the server
+	 * @param socket The connected socket reference
+	 * @param arg0 The first Argument of subtraction
+	 * @param arg1 The second Argument of subtraction
+	 * @return Whether the request and computation was successful.
+	 */
 	private boolean clientRequestSubtraction(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.SUBTRACTION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
@@ -104,6 +135,13 @@ public class OperationClient {
 		}
 	}
 	
+	/**
+	 * Requests the Multiplication operation to the server
+	 * @param socket The connected socket reference
+	 * @param arg0 The first Argument of multiplication
+	 * @param arg1 The second Argument of multiplication
+	 * @return Whether the request and computation was successful.
+	 */
 	private boolean clientRequestMultiplication(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.MULTIPLICATION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
@@ -119,6 +157,11 @@ public class OperationClient {
 		}
 	}
 	
+	/**
+	 * Waits for result by server and returns the string.
+	 * @param socket The connected Socket reference
+	 * @return The reply message of the server
+	 */
 	
 	private String readResult(Socket socket){
 		try {
