@@ -7,7 +7,10 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.json.simple.JSONObject;
+
 import utils.Protocol;
+import utils.Protocol.Operation;
 
 public class OperationClient {
 
@@ -50,12 +53,74 @@ public class OperationClient {
 	
 	private void connectedToServer(Socket socket){
 		System.out.println("Client successfully connected to server!");
-		Integer[] args = {1,2};
-		Protocol.request(socket, Protocol.Operation.AUTHENTICATE, clientName, args);
-		while(readResult(socket));
+		if (clientAuthenticate(socket)){
+			System.out.println("SUCCESSFULLY AUTHENTICATED!");
+		}else{
+			System.out.println("AUTHENTICATION ERROR! Disconnecting..");
+			disconnect();
+		}
+		clientRequestAddition(socket, 1,2);
+		clientRequestSubtraction(socket, 1, 2);
+		clientRequestMultiplication(socket, 1, 2);
+
 	}
 	
-	private boolean readResult(Socket socket){
+	private boolean clientAuthenticate(Socket socket){
+		Protocol.request(socket, Protocol.Operation.AUTHENTICATE, clientName, new Integer[]{});
+		String replyMessage;
+		while((replyMessage = readResult(socket))== null);
+		JSONObject responseObj = Protocol.makeJsonObjectByString(replyMessage);
+		String resultType = (String) responseObj.get("type");
+		return resultType.equals("OK");
+	}
+	
+	private boolean clientRequestAddition(Socket socket, Integer arg0, Integer arg1){
+		Protocol.request(socket, Operation.ADDITION, clientName, new Integer[]{arg0, arg1});
+		String replyMessage;
+		while((replyMessage = readResult(socket))== null);
+		JSONObject responseObj = Protocol.makeJsonObjectByString(replyMessage);
+		String resultType = (String) responseObj.get("type");
+		if (!resultType.equals("OK")){
+			return false;
+		}else{
+			Integer result = Integer.parseInt((String)responseObj.get("result"));
+			System.out.println("Addition result of "+arg0+" and "+arg1+": "+result);
+			return true;
+		}
+	}
+	
+	private boolean clientRequestSubtraction(Socket socket, Integer arg0, Integer arg1){
+		Protocol.request(socket, Operation.SUBTRACTION, clientName, new Integer[]{arg0, arg1});
+		String replyMessage;
+		while((replyMessage = readResult(socket))== null);
+		JSONObject responseObj = Protocol.makeJsonObjectByString(replyMessage);
+		String resultType = (String) responseObj.get("type");
+		if (!resultType.equals("OK")){
+			return false;
+		}else{
+			Integer result = Integer.parseInt((String)responseObj.get("result"));
+			System.out.println("Subtraction result of "+arg0+" and "+arg1+": "+result);
+			return true;
+		}
+	}
+	
+	private boolean clientRequestMultiplication(Socket socket, Integer arg0, Integer arg1){
+		Protocol.request(socket, Operation.MULTIPLICATION, clientName, new Integer[]{arg0, arg1});
+		String replyMessage;
+		while((replyMessage = readResult(socket))== null);
+		JSONObject responseObj = Protocol.makeJsonObjectByString(replyMessage);
+		String resultType = (String) responseObj.get("type");
+		if (!resultType.equals("OK")){
+			return false;
+		}else{
+			Integer result = Integer.parseInt((String)responseObj.get("result"));
+			System.out.println("Multiplication result of "+arg0+" and "+arg1+": "+result);
+			return true;
+		}
+	}
+	
+	
+	private String readResult(Socket socket){
 		try {
 			InputStream in = socket.getInputStream();
 		
@@ -66,15 +131,16 @@ public class OperationClient {
 			while(buff.ready()){
 				serverMessage = buff.readLine();
 				System.out.println("Received message by Server:");
-				System.out.println(serverMessage);	
+				System.out.println(serverMessage);
+				return serverMessage;
 			}
 			
 		} catch (IOException e) {
 			System.out.println("Failed to get Input Stream by socket.");
 			e.printStackTrace();
-			return false;
+			return "Error on Input Stream";
 		} 
-		return true;
+		return null;
 	}
 	
 	

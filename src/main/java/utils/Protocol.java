@@ -19,6 +19,11 @@ public class Protocol {
 		MULTIPLICATION,
 		LUCAS	
 	}
+	
+	public static enum REPLY_TYPE{
+		OK,
+		ERROR
+	}
 
 	public static final int PORT = 1337;
 	public static final String URL = "localhost";
@@ -31,7 +36,7 @@ public class Protocol {
 	 * @param args The arguments (array of integers with arbitrary size)
 	 */
 	public static void request(Socket clientSocket, Protocol.Operation op, String clientName, Integer...args){
-		sendMessage(clientSocket, makeJSONMessage(clientName, op, args));
+		sendMessage(clientSocket, makeClientJSONMessage(clientName, op, args));
 	}
 	
 	
@@ -39,8 +44,8 @@ public class Protocol {
 	 * The reply method the server can call to reply to the client
 	 * @param serverSocket
 	 */
-	public static void reply(Socket serverSocket, String message){
-		sendMessage(serverSocket, message);
+	public static void reply(Socket serverSocket, REPLY_TYPE type, String message){
+		sendMessage(serverSocket, makeServerJSONMessage(type, message));
 	}
 	
 	
@@ -53,26 +58,24 @@ public class Protocol {
 			printStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally{
-			/*try {
-				if (out != null){
-					out.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		}
 	}
 	
-	public static String makeJSONMessage(String clientName, Operation op, Integer... args){
+	public static String makeServerJSONMessage(REPLY_TYPE type, String message){
+		JSONObject json = new JSONObject();
+		json.put("type", type.toString());
+		json.put("result", message);
+		return json.toJSONString();
+	}
+	
+	public static String makeClientJSONMessage(String clientName, Operation op, Integer... args){
 		JSONObject json = new JSONObject();
 		json.put("name", clientName);
 		json.put("operation", op.toString());
 		Integer i = 0;
 		for(Integer argument: args){
 			String key = "arg"+(i++);
-			json.put(key, argument);
+			json.put(key, argument.toString());
 		}
 		return json.toJSONString();
 	}

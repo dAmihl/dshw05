@@ -6,18 +6,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
 import utils.Protocol;
+import utils.Protocol.REPLY_TYPE;
 
 public class OperationServer {
 
 	private boolean isRunning = true;
 	private ServerSocket serverSocket = null;
 	
-	public OperationServer() throws IOException{
+	private static final ArrayList<String> knownClientNames = new ArrayList<>();
 	
+	public OperationServer() throws IOException{
+			knownClientNames.add("client");
 			serverSocket = new ServerSocket(Protocol.PORT);
 		
 	}
@@ -79,16 +83,66 @@ public class OperationServer {
 		if (jsonObj != null){
 			String requestedOperation = (String) jsonObj.get("operation");
 			switch (requestedOperation){
-				case "AUTHENTICATE": Protocol.reply(socket, "I will auth."); break; 
-				case "ADDITION": Protocol.reply(socket, "I will add."); break;
-				case "SUBTRACTION": Protocol.reply(socket, "I will sub.");break;
-				case "MULTIPLICATION": Protocol.reply(socket, "I will mult."); break;
-				case "LUCAS": Protocol.reply(socket, "I will lucas");break;
-				default:Protocol.reply(socket, "Unknown command!"); break;
+				case "AUTHENTICATE": doAuthenticate(socket, jsonObj); break; 
+				case "ADDITION": doAddition(socket, jsonObj); break;
+				case "SUBTRACTION": doSubtraction(socket, jsonObj);break;
+				case "MULTIPLICATION": doMultiplication(socket, jsonObj); break;
+				case "LUCAS": doLucasNumbers(socket, jsonObj);break;
+				default:
+					Protocol.reply(socket, Protocol.REPLY_TYPE.ERROR, "Unknown command!"); break;
 			}
 		}
 		
 	}
+	
+	private void doAuthenticate(Socket socket, JSONObject clientMessage){
+		String clientName = (String) clientMessage.get("name");
+		if (knownClientNames.contains(clientName)){
+			Protocol.reply(socket, REPLY_TYPE.OK, "Successfully authenticated!");
+		}else{
+			Protocol.reply(socket, REPLY_TYPE.ERROR, "Unknown client name.");
+		}
+		
+	}
+	
+	private void doAddition(Socket socket, JSONObject clientMessage){
+		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
+		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
+		if (arg0 == null || arg1 == null){
+			Protocol.reply(socket, REPLY_TYPE.ERROR, "Wrong arguments!");
+		}else{
+			Integer result = arg0 + arg1;
+			Protocol.reply(socket, REPLY_TYPE.OK, result.toString());
+		}
+	}
+	
+	private void doSubtraction(Socket socket, JSONObject clientMessage){
+		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
+		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
+		if (arg0 == null || arg1 == null){
+			Protocol.reply(socket, REPLY_TYPE.ERROR, "Wrong arguments!");
+		}else{
+			Integer result = arg0 - arg1;
+			Protocol.reply(socket, REPLY_TYPE.OK, result.toString());
+		}
+	}
+	
+	private void doMultiplication(Socket socket, JSONObject clientMessage){
+		Integer arg0 = Integer.parseInt(((String) clientMessage.get("arg0")));
+		Integer arg1 = Integer.parseInt(((String) clientMessage.get("arg1")));
+		if (arg0 == null || arg1 == null){
+			Protocol.reply(socket, REPLY_TYPE.ERROR, "Wrong arguments!");
+		}else{
+			Integer result = arg0 * arg1;
+			Protocol.reply(socket, REPLY_TYPE.OK, result.toString());
+		}
+	}
+	
+	private void doLucasNumbers(Socket socket, JSONObject clientMessage){
+		
+	}
+	
+	
 	
 	
 }
