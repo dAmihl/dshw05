@@ -22,7 +22,8 @@ public class OperationClient {
 	
 	
 	/**
-	 * Called to connect to the server. PORT and URL are specified in Protocol class.
+	 * Called to connect to the server. 
+	 * PORT and URL are specified in Protocol class.
 	 */
 	public void connect(){
 		try {
