@@ -35,11 +35,7 @@ public class OperationClient {
 		} catch (IOException e) {
 			System.out.println("Error connecting to server!");
 			e.printStackTrace();
-		} finally {
-			if (clientSocket != null){
-				disconnect();
-			}
-		}
+		} 
 	}
 	
 	/**
@@ -59,6 +55,10 @@ public class OperationClient {
 		}
 	}
 	
+	public Socket getConnectedSocket(){
+		return clientSocket;
+	}
+	
 	
 	/**
 	 * Called when successfully connected to a server.
@@ -72,9 +72,10 @@ public class OperationClient {
 			System.out.println("AUTHENTICATION ERROR! Disconnecting..");
 			disconnect();
 		}
-		clientRequestAddition(socket, 1,2);
+		
+		/*clientRequestAddition(socket, 1,2);
 		clientRequestSubtraction(socket, 1, 2);
-		clientRequestMultiplication(socket, 1, 2);
+		clientRequestMultiplication(socket, 1, 2);*/
 
 	}
 	
@@ -99,7 +100,7 @@ public class OperationClient {
 	 * @param arg1 The second Argument of addition
 	 * @return Whether the request and computation was successful.
 	 */
-	private boolean clientRequestAddition(Socket socket, Integer arg0, Integer arg1){
+	public boolean clientRequestAddition(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.ADDITION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
 		while((replyMessage = readResult(socket))== null);
@@ -121,7 +122,7 @@ public class OperationClient {
 	 * @param arg1 The second Argument of subtraction
 	 * @return Whether the request and computation was successful.
 	 */
-	private boolean clientRequestSubtraction(Socket socket, Integer arg0, Integer arg1){
+	public boolean clientRequestSubtraction(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.SUBTRACTION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
 		while((replyMessage = readResult(socket))== null);
@@ -143,7 +144,7 @@ public class OperationClient {
 	 * @param arg1 The second Argument of multiplication
 	 * @return Whether the request and computation was successful.
 	 */
-	private boolean clientRequestMultiplication(Socket socket, Integer arg0, Integer arg1){
+	public boolean clientRequestMultiplication(Socket socket, Integer arg0, Integer arg1){
 		Protocol.request(socket, Operation.MULTIPLICATION, clientName, new Integer[]{arg0, arg1});
 		String replyMessage;
 		while((replyMessage = readResult(socket))== null);
@@ -156,6 +157,17 @@ public class OperationClient {
 			System.out.println("Multiplication result of "+arg0+" and "+arg1+": "+result);
 			return true;
 		}
+	}
+	
+	
+	/**
+	 * Requests arg0 lucas numbers from the server.
+	 * @param socket The connected socket reference
+	 * @param arg0 The number of lucas numbers to request
+	 * @return whether the request was successful.
+	 */
+	public boolean clientRequestLucasNumbers(Socket socket, Integer arg0){
+		return true;
 	}
 	
 	/**

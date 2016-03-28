@@ -1,8 +1,10 @@
 package utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PushbackInputStream;
 import java.net.Socket;
 
 import org.json.simple.JSONObject;
@@ -130,6 +132,34 @@ public class Protocol {
 			e.printStackTrace();
 		}
 		return obj;
+	}
+	
+	
+	/**
+	 * Checks if input stream can be read.
+	 */
+	public static InputStream canReadInputStream(InputStream stream){
+	    PushbackInputStream pushbackInputStream = new PushbackInputStream(stream);
+	    int b;
+		try {
+			b = pushbackInputStream.read();
+		} catch (IOException e) {
+			System.out.println("Could not read from input stream.");
+			e.printStackTrace();
+			return null;
+		}
+	    if (b==-1){
+	    	return null;
+	    }else{
+	    	try {
+				pushbackInputStream.unread(b);
+				return pushbackInputStream;
+			} catch (IOException e) {
+				System.out.println("Could not unread input stream. Data is now corrupted!");
+				e.printStackTrace();
+				return null;
+			}
+	    }
 	}
 	
 }

@@ -33,7 +33,7 @@ public class OperationServer {
 	public void start(){
 		while (isRunning){
 			Socket client = null;
-			
+			System.out.println("Waiting for client...");
 			try {
 				client = serverSocket.accept();
 				clientConnected(client);
@@ -60,8 +60,18 @@ public class OperationServer {
 	private void clientConnected(Socket clientSocket){
 		System.out.println("Client successfully connected!");
 		System.out.println("Server now listening to client..");
+		InputStream effectiveInputStream = null;
 		// Waits for the client to send a message..
-		while(readClientMessage(clientSocket));
+		try {
+			while((effectiveInputStream = Protocol.canReadInputStream(clientSocket.getInputStream()))!= null){
+				while(!readClientMessage(clientSocket, effectiveInputStream));
+			}
+			System.out.println("Connection lost. Disconnecting..");
+			clientSocket.close();
+		} catch (IOException e) {
+			System.out.println("Could not get input stream.");
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -69,9 +79,9 @@ public class OperationServer {
 	 * @param clientSocket The socket to wait for a message
 	 * @return Whether a message was read yet or not.
 	 */
-	private boolean readClientMessage(Socket clientSocket){
+	private boolean readClientMessage(Socket clientSocket, InputStream inputStream){
 		try {
-			InputStream in = clientSocket.getInputStream();
+			InputStream in = inputStream;
 		
 		
 			BufferedReader buff = new BufferedReader(new InputStreamReader(in));
@@ -82,14 +92,15 @@ public class OperationServer {
 				System.out.println("Received message by Client:");
 				System.out.println(clientMessage);
 				interpretMessageByClient(clientSocket, clientMessage);
+				return true;
 			}
 		
 		} catch (IOException e) {
 			System.out.println("Failed to get Input Stream by socket.");
 			e.printStackTrace();
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	
