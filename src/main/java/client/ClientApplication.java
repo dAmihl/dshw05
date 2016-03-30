@@ -82,7 +82,11 @@ public class ClientApplication {
 	}
 	
 	private static void printHelpText(){
-		System.out.println("HELP TEXT COMES HERE!");
+		System.out.println("HELP TEXT");
+		System.out.println("Example ./client.jar * 1 2");
+		System.out.println("Example ./client.jar + 2 5");
+		System.out.println("Example ./client.jar lucas 5");
+		System.out.println("Example ./client.jar - 5 3");
 	}
 	
 	

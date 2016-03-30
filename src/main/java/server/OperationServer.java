@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.json.simple.JSONObject;
 
@@ -17,12 +19,20 @@ public class OperationServer {
 
 	private boolean isRunning = true;
 	private ServerSocket serverSocket = null;
+	private boolean bMultiThread = false;
+	private ExecutorService executorSrvc;
+	private static int numThreads = 10;
 	
 	private static final ArrayList<String> knownClientNames = new ArrayList<>();
 	
-	public OperationServer() throws IOException{
+	public OperationServer(boolean multiThread) throws IOException{
 			knownClientNames.add("client");
+			bMultiThread = multiThread;
 			serverSocket = new ServerSocket(Protocol.PORT);
+			
+			if (bMultiThread){
+				executorSrvc = Executors.newFixedThreadPool(numThreads);
+			}
 		
 	}
 	
@@ -36,19 +46,19 @@ public class OperationServer {
 			System.out.println("Waiting for client...");
 			try {
 				client = serverSocket.accept();
-				clientConnected(client);
+				
+				if (bMultiThread){
+					executorSrvc.execute(new ServerThread(client, this));
+				}else{
+					clientConnected(client);
+				}
 			} catch (IOException e) {
 				System.out.println("Could not accept client connection!");
 				e.printStackTrace();
-			} finally{
-				if (client != null){
-					try {
-						client.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}	
+			} 
+		}
+		if (bMultiThread){
+			executorSrvc.shutdown();
 		}
 	}
 	
@@ -57,7 +67,7 @@ public class OperationServer {
 	 * Called when a client successfully connected to the server.
 	 * @param clientSocket The connected socket to client.
 	 */
-	private void clientConnected(Socket clientSocket){
+	public void clientConnected(Socket clientSocket){
 		System.out.println("Client successfully connected!");
 		System.out.println("Server now listening to client..");
 		InputStream effectiveInputStream = null;
