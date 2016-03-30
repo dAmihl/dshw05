@@ -210,8 +210,24 @@ public class OperationServer {
 	 * @param clientMessage The JSONObject the client sent.
 	 */
 	private void doLucasNumbers(Socket socket, JSONObject clientMessage){
+		Integer arg0 = Integer.parseInt((String) clientMessage.get("arg0"));
 		
+		Integer result = lucasNumber(arg0);
+		Protocol.reply(socket, REPLY_TYPE.OK, result.toString());
 	}
+	
+	/**
+	 * Naive way to compute lucas numbers. 
+	 * @param N The number to compute
+	 * @return lucas number for number N
+	 */
+	private Integer lucasNumber(int N){
+		if( N == 0 ) return 2;
+	    if( N == 1 ) return 1;
+	    return lucasNumber(N-1) + lucasNumber(N-2);
+	}
+	
+	
 	
 	
 	

@@ -167,7 +167,18 @@ public class OperationClient {
 	 * @return whether the request was successful.
 	 */
 	public boolean clientRequestLucasNumbers(Socket socket, Integer arg0){
-		return true;
+		Protocol.request(socket, Operation.LUCAS, clientName, arg0);
+		String replyMessage;
+		while((replyMessage = readResult(socket))== null);
+		JSONObject responseObj = Protocol.makeJsonObjectByString(replyMessage);
+		String resultType = (String) responseObj.get("type");
+		if (!resultType.equals("OK")){
+			return false;
+		}else{
+			Integer result = Integer.parseInt((String)responseObj.get("result"));
+			System.out.println("Lucas Number result of "+arg0+": "+result);
+			return true;
+		}
 	}
 	
 	/**
