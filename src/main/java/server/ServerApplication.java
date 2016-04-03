@@ -10,7 +10,7 @@ public class ServerApplication {
 
 	public static void main(String[] args) {
 				
-		System.out.println("Server started..");
+		System.out.println("Server started...");
 		
 		if (args.length > 0){
 			switch(args[0]){
