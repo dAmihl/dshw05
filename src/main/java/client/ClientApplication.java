@@ -64,6 +64,7 @@ public class ClientApplication {
 	
 	private static void testEchoRMI(){
 		EchoTask t = new EchoTask("Hello World ECHO!");
+		t.setTaskName("EchoTask");
 		try {
 			if (remoteRMIServer != null){
 			String result = (String) remoteRMIServer.executeTask(t);
