@@ -1,12 +1,21 @@
 package server;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
+import rmiutils.RMITask;
+import rmiutils.RemoteMethodServer;
+import utils.Protocol;
 
 public class ServerApplication {
 	
 	private static OperationServer server;
 	
 	private static boolean bMultiThread = true;
+	private static boolean bUseRMI = true;
 
 	public static void main(String[] args) {
 				
@@ -39,8 +48,32 @@ public class ServerApplication {
 			System.exit(0);
 		}
 		
+		if (bUseRMI){
+			initRMI();
+		}
+		
 		server.start();
+		
+		
 
+	}
+	
+	private static void initRMI(){
+		/*if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }*/
+        try {
+            String name = Protocol.RMI_NAME;
+            RemoteMethodServer engine = new RemoteMethodEngine();
+            RemoteMethodServer stub =
+                (RemoteMethodServer) UnicastRemoteObject.exportObject(engine, 0);
+            Registry registry = LocateRegistry.createRegistry(Protocol.RMI_PORT);
+            registry.rebind(name, stub);
+            System.out.println("RMIServerEngine bound on port "+Protocol.RMI_PORT);
+        } catch (Exception e) {
+            System.err.println("RMI Server exception:");
+            e.printStackTrace();
+        }
 	}
 	
 	private static void printHelpText(){
@@ -49,6 +82,8 @@ public class ServerApplication {
 		System.out.println("Or: ./server.jar single");
 		System.out.println("No argument means multi threaded.");
 	}
+
+
 	
 
 

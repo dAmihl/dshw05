@@ -1,8 +1,13 @@
 package client;
 
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Scanner;
 
+import rmiutils.EchoTask;
+import rmiutils.RemoteMethodServer;
 import utils.Protocol;
 
 public class ClientApplication {
@@ -11,13 +16,23 @@ public class ClientApplication {
 	private static OperationClient client;
 	
 	private static boolean bExitProgram = false;
+	private static boolean bUseRMI = true;
+	private static RemoteMethodServer remoteRMIServer;
 	
 	public static void main(String[] args) {
 		System.out.println("Client started..");
 		System.out.println("Trying to connect to: "+Protocol.URL+":"+Protocol.PORT);
 
+		if (bUseRMI){
+			initRMI();
+		}
+		
+		testEchoRMI();
+		
 		client = new OperationClient();
 		client.connect();
+		
+		
 		
 		if (args.length > 1){
 			readCommandLineArguments(args);
@@ -25,6 +40,40 @@ public class ClientApplication {
 			while (!bExitProgram){
 				startUserInput();
 			}
+		}
+	}
+	
+	
+	private static void initRMI(){
+		/*if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }*/
+        try {
+            String name = Protocol.RMI_NAME;
+            Registry registry = LocateRegistry.getRegistry(Protocol.RMI_PORT);
+            remoteRMIServer = (RemoteMethodServer) registry.lookup(name);
+            System.out.println("RMI Initialized. Ready to use.");
+            //Pi task = new Pi(Integer.parseInt(args[1]));
+            //BigDecimal pi = comp.executeTask(task);
+            //System.out.println(pi);
+        } catch (Exception e) {
+            System.err.println("Compute RMI exception:");
+            e.printStackTrace();
+        }
+	}
+	
+	private static void testEchoRMI(){
+		EchoTask t = new EchoTask("Hello World ECHO!");
+		try {
+			if (remoteRMIServer != null){
+			String result = (String) remoteRMIServer.executeTask(t);
+			System.out.println("RMI Echo result: "+result);
+			} else{
+				System.out.println("Remote server is null!");
+			}
+		} catch (RemoteException e) {
+			System.out.println("RMI Echo exception!");
+			e.printStackTrace();
 		}
 	}
 	

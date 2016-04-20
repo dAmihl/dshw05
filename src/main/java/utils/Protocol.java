@@ -43,6 +43,8 @@ public class Protocol {
 	 */
 	public static final int PORT = 1337;
 	public static final String URL = "localhost";
+	public static final String RMI_NAME = "RemoteComputation";
+	public static final Integer RMI_PORT = 1099;
 	
 	 
 	/**
