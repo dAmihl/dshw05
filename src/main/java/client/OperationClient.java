@@ -253,7 +253,7 @@ public class OperationClient {
 		}
 	}
 	
-	public void rmiQuestion(String question){
+	public void rmiQuestion(){
 		
 		try {
 			RMIClientCallback callback = new RMIClientCallback();

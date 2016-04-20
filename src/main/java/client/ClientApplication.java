@@ -200,9 +200,8 @@ public class ClientApplication {
 	}
 	
 	private static void startRMIDeepThoughtUserInput(){
-		System.out.println("Enter a String: ");
-		String inputString = inputReader.nextLine();
-		client.rmiQuestion(inputString);
+		System.out.println("Question of life, the universe and everything.. ");
+		client.rmiQuestion();
 	}
 	
 	private static void startRMIPurposeUserInput(){
