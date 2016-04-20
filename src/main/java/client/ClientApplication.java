@@ -23,16 +23,17 @@ public class ClientApplication {
 		System.out.println("Client started..");
 		System.out.println("Trying to connect to: "+Protocol.URL+":"+Protocol.PORT);
 
-		if (bUseRMI){
-			initRMI();
-		}
 		
-		testEchoRMI();
+		
+		
 		
 		client = new OperationClient();
 		client.connect();
 		
-		
+		if (bUseRMI){
+			initRMI();
+			testEchoRMI();
+		}
 		
 		if (args.length > 1){
 			readCommandLineArguments(args);
@@ -53,6 +54,7 @@ public class ClientApplication {
             Registry registry = LocateRegistry.getRegistry(Protocol.RMI_PORT);
             remoteRMIServer = (RemoteMethodServer) registry.lookup(name);
             System.out.println("RMI Initialized. Ready to use.");
+            client.setRemoteServer(remoteRMIServer);
             //Pi task = new Pi(Integer.parseInt(args[1]));
             //BigDecimal pi = comp.executeTask(task);
             //System.out.println(pi);
@@ -155,26 +157,61 @@ public class ClientApplication {
 	
 	private static void startOperationSelect(){
 		System.out.println("Select an operation:");
-		System.out.println("0. Addition");
-		System.out.println("1. Subtraction");
-		System.out.println("2. Multiplication");
-		System.out.println("3. Lucas Numbers");
-		System.out.println("4. Exit");
+		System.out.println("1. Addition");
+		System.out.println("2. Subtraction");
+		System.out.println("3. Multiplication");
+		System.out.println("4. Lucas Numbers");
+		System.out.println("5. RMI - Echo");
+		System.out.println("6. RMI - Reverse");
+		System.out.println("7. RMI - Question DeepThought");
+		System.out.println("8. RMI - What is my purpose?");
+		System.out.println("0. Exit");
 		
 		System.out.println("Enter a number: ");
 
 		int operationSelection = inputReader.nextInt();
+		inputReader.nextLine();
 		
 		
 		switch(operationSelection){
-		case 0: startAdditionUserInput(); break;
-		case 1: startSubtractionUserInput();break;
-		case 2: startMultiplicationUserInput();break;
-		case 3: startLucasNumbersUserInput();break;
-		case 4: endProgram(); break;
+		case 1: startAdditionUserInput(); break;
+		case 2: startSubtractionUserInput();break;
+		case 3: startMultiplicationUserInput();break;
+		case 4: startLucasNumbersUserInput();break;
+		case 0: endProgram(); break;
+		case 5: startRMIEchoUserInput(); break;
+		case 6: startRMIReverseUserInput(); break;
+		case 7: startRMIDeepThoughtUserInput(); break;
+		case 8: startRMIPurposeUserInput(); break;
 		default: System.out.println("Unknown input. Please try again."); break;
 		}
 	}
+	
+	private static void startRMIEchoUserInput(){
+		System.out.println("Enter a String: ");
+		String inputString = inputReader.nextLine();
+		client.rmiEcho(inputString);
+	}
+	
+	private static void startRMIReverseUserInput(){
+		System.out.println("Enter a String: ");
+		String inputString = inputReader.nextLine();
+		client.rmiReverse(inputString);
+	}
+	
+	private static void startRMIDeepThoughtUserInput(){
+		System.out.println("Enter a String: ");
+		String inputString = inputReader.nextLine();
+		client.rmiQuestion(inputString);
+	}
+	
+	private static void startRMIPurposeUserInput(){
+		System.out.println("What is my purpose?");
+		client.rmiPurpose();
+	}
+	
+	
+	
 	
 	private static void startAdditionUserInput(){
 		System.out.println("You selected the Addition operation.");

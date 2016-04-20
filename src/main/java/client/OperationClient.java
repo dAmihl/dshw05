@@ -6,9 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 import org.json.simple.JSONObject;
 
+import rmiutils.DeepThoughtTask;
+import rmiutils.EchoTask;
+import rmiutils.PurposeTask;
+import rmiutils.RemoteMethodServer;
+import rmiutils.RemoteTask;
+import rmiutils.ReverseEchoTask;
 import utils.Protocol;
 import utils.Protocol.Operation;
 
@@ -16,6 +23,8 @@ public class OperationClient {
 
 	private Socket clientSocket = null;
 	private String clientName = "client";
+	
+	private RemoteMethodServer remoteServer;
 	
 	public OperationClient(){
 	}
@@ -36,6 +45,10 @@ public class OperationClient {
 			System.out.println("Error connecting to server!");
 			e.printStackTrace();
 		} 
+	}
+	
+	public void setRemoteServer(RemoteMethodServer rmServer){
+		this.remoteServer = rmServer;
 	}
 	
 	/**
@@ -210,8 +223,55 @@ public class OperationClient {
 		return null;
 	}
 	
+
 	
 	
+	public void rmiEcho(String msg){
+		
+		EchoTask echoTask = new EchoTask(msg);
+		System.out.println("Sending RMI echo with msg "+msg);
+		try {
+			String result = remoteServer.executeTask(echoTask);
+			System.out.println("Result of RMI Echo Task: "+result);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void rmiReverse(String msg){
+
+		ReverseEchoTask revEchoTask = new ReverseEchoTask(msg);
+		try {
+			String result = remoteServer.executeTask(revEchoTask);
+			System.out.println("Result of RMI Reverse Echo Task: "+result);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void rmiQuestion(String question){
+		DeepThoughtTask questionTask = new DeepThoughtTask("Question of life, the universe and everything?");
+		try {
+			Boolean result = remoteServer.executeTask(questionTask);
+			System.out.println("Result of RMI DeepThought Task: "+result);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void rmiPurpose(){
+		PurposeTask task = new PurposeTask();
+		try {
+			String result = remoteServer.executeTask(task);
+			System.out.println("Result of RMI Purpose Task: "+result);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	

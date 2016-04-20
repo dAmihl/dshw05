@@ -11,6 +11,7 @@ public class EchoTask extends RemoteTask<String> {
 	
 	public EchoTask(String str){
 		this.toEcho = str;
+		this.setTaskName("Echo Task");
 	}
 	
 	@Override
