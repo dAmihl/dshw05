@@ -7,12 +7,14 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.rmi.server.RMIClientSocketFactory;
 
 import org.json.simple.JSONObject;
 
 import rmiutils.DeepThoughtTask;
 import rmiutils.EchoTask;
 import rmiutils.PurposeTask;
+import rmiutils.RMIClientCallback;
 import rmiutils.RemoteMethodServer;
 import rmiutils.RemoteTask;
 import rmiutils.ReverseEchoTask;
@@ -252,8 +254,11 @@ public class OperationClient {
 	}
 	
 	public void rmiQuestion(String question){
-		DeepThoughtTask questionTask = new DeepThoughtTask("Question of life, the universe and everything?");
+		
 		try {
+			RMIClientCallback callback = new RMIClientCallback();
+			DeepThoughtTask questionTask = new DeepThoughtTask(
+					"Question of life, the universe and everything?", callback);
 			Boolean result = remoteServer.executeTask(questionTask);
 			System.out.println("Result of RMI DeepThought Task: "+result);
 		} catch (RemoteException e) {
