@@ -1,5 +1,5 @@
-# dshw02
-Homework 02 of Distributed Systems ProSeminar
+# dshw05
+Homework 05 of Distributed Systems ProSeminar
 
 EGGER Michael, AGREITER Martin
 
@@ -8,9 +8,7 @@ EGGER Michael, AGREITER Martin
 3.) Run both jars
 
 
-Arguments for Server application:
-	server.jar single : runs in single threaded mode
-	server.jar multi  : runs in multi thread mode (standard)
-	no argument automatically runs in multi threaded mode!
+How to import in Eclipse:
+Choose file-> import -> import gradle project -> choose root directory.
 
 
